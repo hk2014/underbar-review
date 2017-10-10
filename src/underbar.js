@@ -38,7 +38,7 @@
   // Like first, but for the last elements. If n is undefined, return just the
   // last element.
   _.last = function(array, n) {
-    return n === undefined ? array[array.length-1] : array.slice(n-1, array.length-1);
+    return n === undefined ? array[array.length - 1] : array.slice(n - 1, array.length - 1);
  
   };
 
@@ -48,12 +48,12 @@
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
-    if(Array.isArray(collection) ){
-      for(var i = 0; i < collection.length; i++){
-          iterator(collection[i], i, collection);
-        }
-    } else{
-      for( var key in collection){
+    if (Array.isArray(collection) ) {
+      for (var i = 0; i < collection.length; i++) {
+        iterator(collection[i], i, collection);
+      }
+    } else {
+      for ( var key in collection) {
         iterator(collection[key], key, collection);    
       }
     }
@@ -79,8 +79,8 @@
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
     var arr = [];
-    _.each(collection, function(el){
-      if(test(el)){
+    _.each(collection, function(el) {
+      if (test(el)) {
         arr.push(el);
       }  
     });
@@ -90,8 +90,8 @@
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
     var arr = [];
-    _.each(collection, function(el){
-      if(!test(el)){
+    _.each(collection, function(el) {
+      if (!test(el)) {
         arr.push(el);
       }
     });
@@ -106,10 +106,10 @@
     var arr = [];
     var obj = {};
     //var isSeen = false;
-    _.each(array, function(el){
+    _.each(array, function(el) {
       obj[el] = el;
     });
-    _.each(obj, function(key){
+    _.each(obj, function(key) {
       arr.push(key);
     });
     
@@ -124,7 +124,7 @@
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
     var arr = [];
-    _.each(collection, function(el){
+    _.each(collection, function(el) {
       arr.push(iterator(el));
     });
     return arr;
@@ -171,19 +171,16 @@
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
     
-     //_.each(collection, function(el){
-      if(accumulator === undefined){
-        accumulator = collection[0];
-        
-        for(var i = 1; i < collection.length;i++){
-          accumulator = iterator(accumulator, collection[i]);
-        }
-        //accumulator = el; 
-      } else {
-        _.each(collection, function(el){
-            accumulator = iterator(accumulator, el);
-        });
+    if (accumulator === undefined) {
+      accumulator = collection[0];    
+      for (var i = 1; i < collection.length; i++) {
+        accumulator = iterator(accumulator, collection[i]);
       }
+    } else {
+      _.each(collection, function(el) {
+        accumulator = iterator(accumulator, el);
+      });
+    }
     return accumulator;
   };
 
@@ -204,13 +201,12 @@
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
     var isTrue = true;
-    if(collection.length === 0){
+    if (collection.length === 0) {
       return true;
     }
     iterator = iterator || _.identity;
-    
-   return  _.reduce(collection, function(isTrue,el){
-      if (isTrue === false){
+    return _.reduce(collection, function(isTrue, el) {
+      if (isTrue === false) {
         return false;
       }
       return !!(iterator(el));
@@ -234,7 +230,6 @@
     }, isFalse);
   };
 
-
   /**
    * OBJECTS
    * =======
@@ -254,13 +249,26 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
-    console.log(obj);
+    _.each(arguments, function(argObject) {
+      _.each(argObject, function(value, key) {
+        obj[key] = value;
+      });
+    });
+    
     return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    _.each(arguments, function(argObject) {
+      _.each(argObject, function(value, key) {
+        if (obj[key] === undefined) {
+          obj[key] = value;
+        }
+      });
+    });
+    return obj;
   };
 
 
@@ -304,6 +312,15 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var newObj = {};
+    
+    return function () {
+      var arg = JSON.stringify(arguments);
+      if (!newObj[arg]) {
+        newObj[arg] = func.apply(this, arguments);
+      }
+      return newObj[arg];
+    };
   };
 
   // Delays a function for the given number of milliseconds, and then calls
